@@ -13,6 +13,8 @@ const bool enableValidationLayers = true;
 #endif
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
+const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
                                       const VkAllocationCallbacks* pAllocator,
@@ -63,8 +65,10 @@ private:
 	size_t currentFrame = 0;
 	const int WIDTH = 800;
 	const int HEIGHT = 600;
+	bool framebufferResized = false;
 	GLFWwindow* window = nullptr;
 	VkInstance instance;
+	std::vector<VkExtensionProperties> extensions;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	VkDevice device;
 	VkQueue graphicsQueue;
@@ -90,21 +94,10 @@ private:
 	std::vector<VkFence> inFlightFences;
 
 	VkDebugUtilsMessengerEXT debugMessenger;
-	
-	
-	
-	std::vector<VkExtensionProperties> extensions;
-
-	const std::vector<const char*> validationLayers = {
-	"VK_LAYER_KHRONOS_validation"
-	};
-
-	const std::vector<const char*> deviceExtensions = {
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
-	};
 
 	bool checkValidationLayerSupport();
 	void initWindow();
+	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 	void initVulkan();
 	void createInstance();
 	std::vector<const char*> getRequiredExtensions();
@@ -135,6 +128,9 @@ private:
 	void createSyncObjects();
 	void mainLoop();
 	void drawFrame();
+
+	void recreateSwapChain();
+	void cleanupSwapChain();
 	void cleanup();
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
